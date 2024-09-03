@@ -25,7 +25,7 @@ def lambda_handler(event, context):
         FILE_URL= event['filename']
         OUTPUT_FILE_NAME = FILE_URL.rsplit("/", 1)[1].split(".")[0] + ".txt"
 
-        logger.info(f"Transcribing {FILE_URL} into {FILE_URL}")
+        logger.info(f"Transcribing {FILE_URL} into {OUTPUT_FILE_NAME}")
         transcriber = aai.Transcriber()
         config = aai.TranscriptionConfig(language_code=language_code, speaker_labels=speaker_labels)
         transcript = transcriber.transcribe(FILE_URL, config=config)

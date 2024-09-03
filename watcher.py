@@ -9,6 +9,7 @@ import servicemanager  # Add this line to import servicemanager module
 import sys
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from mypy_boto3_s3 import S3Client
 import logging
 import os
 import threading
@@ -17,8 +18,8 @@ testing = False
 
 # Define the event handler class
 class FileEventHandler(FileSystemEventHandler):
-    def __init__(self, s3client,s3_bucket_name):
-        self.s3client = s3client
+    def __init__(self, s3client: S3Client,s3_bucket_name):
+        self.s3client: S3Client = s3client
         self.s3_bucket_name = s3_bucket_name
 
     
@@ -26,7 +27,7 @@ class FileEventHandler(FileSystemEventHandler):
         logging.info(f"New file created: {event.src_path}")
         # Upload the file to S3 bucket
         file_path = event.src_path
-        file_name = file_path.split('/')[-1]
+        file_name = os.path.basename(file_path)
         for i in range(3):
             try:
                 logging.info(f"Uploading file '{file_name}' to S3 bucket {self.s3_bucket_name}...")
@@ -113,12 +114,13 @@ class MyService(win32serviceutil.ServiceFramework):
         credentials = self.getAWSCredentials()
 
         # Initialize the S3 client
-        s3_client = boto3.client('s3', 
+        s3_client: S3Client = boto3.client('s3', 
                                 aws_access_key_id=credentials['access_key'],
                                 aws_secret_access_key=credentials['secret_key'],
                                 region_name=credentials['region'])
         logging.info("S3 client initialized.")
         # Create the observer and event handler
+        
         event_handler = FileEventHandler(s3_client, self.s3_bucket_name)
         logging.info("File Event Handler created")
         observer = Observer()
@@ -129,7 +131,7 @@ class MyService(win32serviceutil.ServiceFramework):
         logging.info("Observing {dir}...".format(dir=self.directory_to_watch))
         observer.join()
         logging.info("Observation finished. We are no longer monitoring {dir}.".format(dir=self.directory_to_watch))
-
+        
             
 
 if __name__ == '__main__':
