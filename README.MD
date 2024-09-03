@@ -25,3 +25,12 @@ dist\watcher.exe start
 If you need to remove the sevice:
 dist\watcherr.exe remove
 
+# Transcription lambda function
+## Packaging
+In the package directory:
+Install the dependencies (look at the source code to find them)
+!Important!: To install the dependencies in the package directory, use --target ./package 
+Example: pip install --target ./package boto3
+
+Then create the zip using: zip -r ../transcriptions.zip .
+
