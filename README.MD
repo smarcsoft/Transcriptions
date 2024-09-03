@@ -21,9 +21,12 @@ dist\watcher.exe install
 ## Start the service
 dist\watcher.exe start
 
+## Stop the service
+dist\watcher.exe stop
+
 ## Remove the service
 If you need to remove the sevice:
-dist\watcherr.exe remove
+dist\watcher.exe remove
 
 # Transcription lambda function
 ## Packaging

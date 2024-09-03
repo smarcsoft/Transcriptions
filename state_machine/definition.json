@@ -1,0 +1,155 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "Get Credit Limit",
+    "States": {
+      "Get Credit Limit": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 1,
+            "MaxAttempts": 3,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Credit Limit > 5000"
+      },
+      "Credit Limit > 5000": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Next": "Manual Approval"
+          }
+        ],
+        "Default": "Automatic approval"
+      },
+      "Manual Approval": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::sns:publish",
+        "Parameters": {
+          "Message.$": "$"
+        },
+        "Next": "Credit Limit Approved"
+      },
+      "Credit Limit Approved": {
+        "Type": "Pass",
+        "Next": "Identity and Address verification"
+      },
+      "Identity and Address verification": {
+        "Type": "Parallel",
+        "Branches": [
+          {
+            "StartAt": "Identity verification",
+            "States": {
+              "Identity verification": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "OutputPath": "$.Payload",
+                "Parameters": {
+                  "Payload.$": "$"
+                },
+                "Retry": [
+                  {
+                    "ErrorEquals": [
+                      "Lambda.ServiceException",
+                      "Lambda.AWSLambdaException",
+                      "Lambda.SdkClientException",
+                      "Lambda.TooManyRequestsException"
+                    ],
+                    "IntervalSeconds": 1,
+                    "MaxAttempts": 3,
+                    "BackoffRate": 2
+                  }
+                ],
+                "End": true
+              }
+            }
+          },
+          {
+            "StartAt": "Address verification",
+            "States": {
+              "Address verification": {
+                "Type": "Task",
+                "Resource": "arn:aws:states:::lambda:invoke",
+                "OutputPath": "$.Payload",
+                "Parameters": {
+                  "Payload.$": "$"
+                },
+                "Retry": [
+                  {
+                    "ErrorEquals": [
+                      "Lambda.ServiceException",
+                      "Lambda.AWSLambdaException",
+                      "Lambda.SdkClientException",
+                      "Lambda.TooManyRequestsException"
+                    ],
+                    "IntervalSeconds": 1,
+                    "MaxAttempts": 3,
+                    "BackoffRate": 2
+                  }
+                ],
+                "End": true
+              }
+            }
+          }
+        ],
+        "Next": "Credit bureaus"
+      },
+      "Credit bureaus": {
+        "Type": "Task",
+        "Parameters": {
+          "TableName": "MyData"
+        },
+        "Resource": "arn:aws:states:::aws-sdk:dynamodb:scan",
+        "Next": "Credit Scores"
+      },
+      "Credit Scores": {
+        "Type": "Map",
+        "ItemProcessor": {
+          "ProcessorConfig": {
+            "Mode": "INLINE"
+          },
+          "StartAt": "Get all scores",
+          "States": {
+            "Get all scores": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "OutputPath": "$.Payload",
+              "Parameters": {
+                "Payload.$": "$"
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException",
+                    "Lambda.TooManyRequestsException"
+                  ],
+                  "IntervalSeconds": 1,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        "End": true
+      },
+      "Automatic approval": {
+        "Type": "Pass",
+        "Next": "Identity and Address verification"
+      }
+    }
+  }

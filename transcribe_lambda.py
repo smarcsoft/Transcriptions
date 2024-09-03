@@ -32,7 +32,7 @@ def lambda_handler(event, context):
             FILE_URL = f"https://{bucket}.s3.amazonaws.com/{key}"
             OUTPUT_FILE_NAME = FILE_URL.rsplit("/", 1)[1].split(".")[0] + ".txt"
 
-            logger.info(f"Transcribing {FILE_URL} into {FILE_URL}")
+            logger.info(f"Transcribing {FILE_URL} into {OUTPUT_FILE_NAME}")
             transcriber = aai.Transcriber()
             config = aai.TranscriptionConfig(language_code=language_code, speaker_labels=speaker_labels)
             transcript = transcriber.transcribe(FILE_URL, config=config)
@@ -54,15 +54,16 @@ def lambda_handler(event, context):
                         }
                     for utterance in utterances:
                         f.write(f"Speaker {utterance.speaker}: {utterance.text}\n")
-                logging.info(f"Transcription saved to file: {OUTPUT_FILE_NAME}")
+                logging.info(f"Transcription saved to file: {TMPFILE}")
                 logging.info(f"Pushing transcription to {OUTPUT_FILE_NAME}")
                 s3:S3Client = boto3.client('s3')
                 logging.info(f"Uploading {TMPFILE} to bucket smarctranscription")
                 s3.upload_file(TMPFILE, 'smarctranscriptions', f'{OUTPUT_FILE_NAME}')
-                return {
-                    'statusCode': 200,
-                    'body': json.dumps(f"File {FILE_URL} has been transcribed")
-                }
+                logging.info(f"{TMPFILE} has been uploaded to bucket smarctranscription with key {OUTPUT_FILE_NAME}")
+        return {
+            'statusCode': 200,
+            'body': json.dumps(f"File(s) {event['Records']} has been transcribed")
+        }
     except Exception as e:
         logger.error(f"An error occurred during transcription: {str(e)}")
         return {
