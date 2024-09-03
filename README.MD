@@ -29,8 +29,11 @@ dist\watcherr.exe remove
 ## Packaging
 In the package directory:
 Install the dependencies (look at the source code to find them)
-!Important!: To install the dependencies in the package directory, use --target ./package 
-Example: pip install --target ./package boto3
+!Important!: To install the dependencies in the package directory, use --target . 
+The dependencies are:
+pip install --target . boto3
+pip install --target . assemblyai
 
-Then create the zip using: zip -r ../transcriptions.zip .
-
+To create the zip package itself:
+go to the build directory and run build_lambda.sh
+This should create the transcriptions.zip package (in the main directory)
