@@ -1,7 +1,6 @@
 # `pip3 install assemblyai` (macOS)
 # `pip install assemblyai` (Windows)
 
-from typing import List
 import assemblyai as aai
 import logging
 import json
@@ -22,11 +21,16 @@ speaker_labels=True
 
 def lambda_handler(event, context):
     try:
-        logger.info(f"Starting transcription lambda function with {event['Records'].length} records")
-        for record in event['Records']:
+        event_list:list = event['Records']
+        logger.info(f"Starting transcription lambda function with {len(event_list)} records")
+        for record in event_list:
             key = record['s3']['object']['key']
             bucket = record['s3']['bucket']['name']
             logging.info(f"Transcribing file {key} from bucket {bucket}")
+            # Check if the file is an audio file
+            if not key.lower().endswith(('.mp3', '.wav', '.flac', '.ogg', '.mp4', '.m4a', '.wma', '.aac')):
+                logger.warning(f"File {key} is not an audio file. Skipping...")
+                continue
             # The key might be URL encoded, so we may need to decode it
             key = urllib.parse.unquote_plus(key)
             FILE_URL = f"https://{bucket}.s3.amazonaws.com/{key}"
