@@ -22,4 +22,6 @@ zip -r $parent_dir/transcriptions.zip .
 cd $parent_dir || { echo "Failed to change to parent directory" >&2; exit 1; }
 zip $parent_dir/transcriptions.zip transcribe_lambda.py
 zip -d $parent_dir/transcriptions.zip "*/__pycache__/*"
+# move the zip file to the package directory
+mv $parent_dir/transcriptions.zip $parent_dir/package
 echo "Package done!"
