@@ -1,7 +1,7 @@
 # `pip3 install assemblyai` (macOS)
 # `pip install assemblyai` (Windows)
 
-import assemblyai as aai
+from transcription import transcribe
 import logging
 import json
 import boto3
@@ -13,7 +13,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 #TODO: Save this API key in a secured location on AWS.
-aai.settings.api_key = "b4dd2fbbb4164707a20534980fa0bfb4"
+api_key = "b4dd2fbbb4164707a20534980fa0bfb4"
 
 #TODO: Save these config parameters in an appropriate location
 language_code="en"
@@ -34,36 +34,17 @@ def lambda_handler(event, context):
             # The key might be URL encoded, so we may need to decode it
             key = urllib.parse.unquote_plus(key)
             FILE_URL = f"https://{bucket}.s3.amazonaws.com/{key}"
+            # OUTPUT_FILE_NAME will contain the relative name with its extension as text
             OUTPUT_FILE_NAME = FILE_URL.rsplit("/", 1)[1].split(".")[0] + ".txt"
-
+            TMPFILE = "/tmp/" + OUTPUT_FILE_NAME
             logger.info(f"Transcribing {FILE_URL} into {OUTPUT_FILE_NAME}")
-            transcriber = aai.Transcriber()
-            config = aai.TranscriptionConfig(language_code=language_code, speaker_labels=speaker_labels)
-            transcript = transcriber.transcribe(FILE_URL, config=config)
-            if transcript.status == aai.TranscriptStatus.error:
-                logger.error(f"Transcription error: {transcript.error}")
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps(f"File {FILE_URL} could not be transcribed : {transcript.error}")
-                }
-            else:
-                TMPFILE = f"/tmp/{OUTPUT_FILE_NAME}"
-                with open(TMPFILE, 'w', encoding='utf-8') as f:
-                    utterances = transcript.utterances
-                    if utterances is None:
-                        logger.error(f"No utterances found in transcription")
-                        return {
-                            'statusCode': 400,
-                            'body': json.dumps(f"File {FILE_URL} could not be transcribed : No utterances found in transcription")
-                        }
-                    for utterance in utterances:
-                        f.write(f"Speaker {utterance.speaker}: {utterance.text}\n")
-                logging.info(f"Transcription saved to file: {TMPFILE}")
-                logging.info(f"Pushing transcription to {OUTPUT_FILE_NAME}")
-                s3:S3Client = boto3.client('s3')
-                logging.info(f"Uploading {TMPFILE} to bucket smarctranscription")
-                s3.upload_file(TMPFILE, 'smarctranscriptions', f'{OUTPUT_FILE_NAME}')
-                logging.info(f"{TMPFILE} has been uploaded to bucket smarctranscription with key {OUTPUT_FILE_NAME}")
+            transcribe(FILE_URL, OUTPUT_FILE_NAME, api_key, language_code, speaker_labels)
+            logging.info(f"Transcription saved to file: {TMPFILE}")
+            logging.info(f"Pushing transcription to S3 bucket with key {OUTPUT_FILE_NAME}")
+            s3:S3Client = boto3.client('s3')
+            logging.info(f"Uploading {TMPFILE} to bucket smarctranscription")
+            s3.upload_file(TMPFILE, 'smarctranscriptions', f'{OUTPUT_FILE_NAME}')
+            logging.info(f"{TMPFILE} has been uploaded to bucket smarctranscription with key {OUTPUT_FILE_NAME}")
         return {
             'statusCode': 200,
             'body': json.dumps(f"File(s) {event['Records']} has been transcribed")
