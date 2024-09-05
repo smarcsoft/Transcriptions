@@ -18,7 +18,6 @@ def transcribe(inputfile:str, outputfile:str|None=None, api_key:str=DEFAULT_API_
     logging.info(f"Speaker Labels: {speaker_labels}")
 
     transcript = transcriber.transcribe(inputfile, config=config)
-
     if transcript.status == aai.TranscriptStatus.error:
         raise Exception(f"Transcription error: {transcript.error}")
     else:
