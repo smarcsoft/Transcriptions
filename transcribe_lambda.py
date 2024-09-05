@@ -19,6 +19,8 @@ aai.settings.api_key = "b4dd2fbbb4164707a20534980fa0bfb4"
 language_code="en"
 speaker_labels=True
 
+#TODO: Use the transcribe function
+
 def lambda_handler(event, context):
     try:
         event_list:list = event['Records']

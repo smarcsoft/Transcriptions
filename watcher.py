@@ -43,7 +43,7 @@ class FileEventHandler(FileSystemEventHandler):
                     logging.error(f"Error Failed uploading file '{file_name}' after 3 times to S3 bucket: {str(e)}")
 
 
-class MyService(win32serviceutil.ServiceFramework):
+class FileTransferService(win32serviceutil.ServiceFramework):
     _svc_name_ = 'TranscriptionWatcher'
     _svc_display_name_ = 'Transcription File Watcher Service'
     _svc_description_ = 'Watch a directory for audio files to be transcribed and summarized'
@@ -149,19 +149,19 @@ if __name__ == '__main__':
         logging.info("Running in test mode.")
         testing = True
         sys.argv.remove('--test')
-        MyService(sys.argv).SvcDoRun()
+        FileTransferService(sys.argv).SvcDoRun()
     else:
         testing = False
         if len(sys.argv) == 1:
             logging.info("Initializing service manager...")
             servicemanager.Initialize()
             logging.info("Preparing to host single...")
-            servicemanager.PrepareToHostSingle(MyService)
+            servicemanager.PrepareToHostSingle(FileTransferService)
             logging.info("Starting service control dispatcher...")
             servicemanager.StartServiceCtrlDispatcher()
         else:
             logging.info("Handling command line...")
-            win32serviceutil.HandleCommandLine(MyService)
+            win32serviceutil.HandleCommandLine(FileTransferService)
 
 
         

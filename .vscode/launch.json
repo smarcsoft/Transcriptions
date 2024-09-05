@@ -11,6 +11,14 @@
             "program": "${file}",
             "args": ["--test", "start"],
             "console": "integratedTerminal"
+        },
+        {
+            "name": "User Interface",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["testfiles/sample.m4a"],
+            "console": "integratedTerminal"
         }
     ]
 }

@@ -3,3 +3,5 @@ __pycache__/
 package/
 dist/blank.exe
 dist/watcher.exe
+build/blank/
+build/watcher/
