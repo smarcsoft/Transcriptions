@@ -17,7 +17,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["testfiles/sample.m4a"],
+            "args": ["--file","testfiles\\sample.m4a", "--stdout"],
             "console": "integratedTerminal"
         }
     ]
