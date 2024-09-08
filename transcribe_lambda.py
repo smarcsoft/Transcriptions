@@ -7,17 +7,21 @@ import json
 import boto3
 from mypy_boto3_s3.client import S3Client
 import urllib.parse
+from config import get_parameter
+import os
+import tempfile
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-#TODO: Save this API key in a secured location on AWS.
-api_key = "b4dd2fbbb4164707a20534980fa0bfb4"
-
-#TODO: Save these config parameters in an appropriate location
+api_key = get_parameter("/transcription/ASSEMBLYAI_APIKEY")
+# TODO Implement language detection
 language_code="en"
 speaker_labels=True
+
+
+
 
 def lambda_handler(event, context):
     try:
@@ -36,14 +40,15 @@ def lambda_handler(event, context):
             FILE_URL = f"https://{bucket}.s3.amazonaws.com/{key}"
             # OUTPUT_FILE_NAME will contain the relative name with its extension as text
             OUTPUT_FILE_NAME = FILE_URL.rsplit("/", 1)[1].split(".")[0] + ".txt"
-            TMPFILE = "/tmp/" + OUTPUT_FILE_NAME
+            TMP_DIR = tempfile.gettempdir()
+            TMPFILE = os.path.join(TMP_DIR, OUTPUT_FILE_NAME)
             logger.info(f"Transcribing {FILE_URL} into {OUTPUT_FILE_NAME}")
-            transcribe(FILE_URL, OUTPUT_FILE_NAME, api_key, language_code, speaker_labels)
+            transcribe(FILE_URL, TMPFILE, api_key, language_code, speaker_labels)
             logging.info(f"Transcription saved to file: {TMPFILE}")
             logging.info(f"Pushing transcription to S3 bucket with key {OUTPUT_FILE_NAME}")
             s3:S3Client = boto3.client('s3')
-            logging.info(f"Uploading {TMPFILE} to bucket smarctranscription")
-            s3.upload_file(TMPFILE, 'smarctranscriptions', f'{OUTPUT_FILE_NAME}')
+            logging.info(f"Uploading {TMPFILE} to bucket {bucket}")
+            s3.upload_file(TMPFILE, bucket, f'{OUTPUT_FILE_NAME}')
             logging.info(f"{TMPFILE} has been uploaded to bucket smarctranscription with key {OUTPUT_FILE_NAME}")
         return {
             'statusCode': 200,

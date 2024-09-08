@@ -1,10 +1,11 @@
 import assemblyai as aai
 import logging
+from config import get_parameter
 
 # Handle parametersimport argparse
 import argparse
 
-DEFAULT_API_KEY = "b4dd2fbbb4164707a20534980fa0bfb4"
+DEFAULT_API_KEY = get_parameter("/transcription/ASSEMBLYAI_APIKEY")
 
 def transcribe(inputfile:str, outputfile:str|None=None, api_key:str=DEFAULT_API_KEY, language_code:str|None=None, speaker_labels:bool=True):
     aai.settings.api_key = api_key

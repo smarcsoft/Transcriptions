@@ -3,11 +3,9 @@ import logging
 import openai
 import os
 import argparse
+from config import get_parameter
 
-OPENAI_KEY=os.getenv("OPENAI_KEY")
-if OPENAI_KEY == None:
-    logging.error("OPENAI_KEY environment variable not set.")
-    exit(1)
+OPENAI_KEY=get_parameter("/transcription/OPENAI_APIKEY")
 
 def summarize_text(text:str)->str:
     openai.api_key = OPENAI_KEY
@@ -24,7 +22,7 @@ def summarize_text(text:str)->str:
     return toReturn
 
 
-def summarize(inputfile:str, outputfile:str, api_key:str=OPENAI_KEY, language_code:str|None=None, speaker_labels:bool=True):
+def summarize(inputfile:str, outputfile:str|None, api_key:str=OPENAI_KEY, language_code:str|None=None, speaker_labels:bool=True):
     with open(inputfile, 'r') as file:
         text_to_summarize = file.read() 
     summary = summarize_text(text_to_summarize)
