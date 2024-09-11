@@ -22,7 +22,7 @@ def summarize_text(text:str)->str:
     return toReturn
 
 
-def summarize(inputfile:str, outputfile:str|None, api_key:str=OPENAI_KEY, language_code:str|None=None, speaker_labels:bool=True):
+def summarize(inputfile:str, outputfile:str|None):
     with open(inputfile, 'r') as file:
         text_to_summarize = file.read() 
     summary = summarize_text(text_to_summarize)

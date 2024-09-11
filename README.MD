@@ -4,35 +4,13 @@ For the fun of it (and to learn about AWS Lambda and AWS Step Functions) here is
 
 # Transcription lambda function
 ## Packaging
-Create a package/transcription directory under the project root.  
-In the package directory:  
-Install the dependencies (look at the source code to find them)  
-!Important!: To install the dependencies in the package directory, use --target .   
-The dependencies are:  
-```
-pip install --target . boto3  
-pip install --target . assemblyai  
-```
+Go to the build directory and run build_lambda.sh  
+This should create the transcriptions.zip in package/transcription (from the main directory)  
 
-To create the zip package itself:  
-go to the build directory and run build_lambda.sh  
-This should create the transcriptions.zip package (in the main directory)  
-
-# Summarization lambda_transcription function
+# Summarization lambda function
 ## Packaging
-Create a package/summarization directory under the project root.
-In the package directory: 
-Install the dependencies (look at the source code to find them)  
-!Important!: To install the dependencies in the package directory, use --target .   
-The dependencies are:  
-```
-pip install --target . boto3  
-pip install --target . assemblyai  
-```
-
-To create the zip package itself:  
-go to the build directory and run build_lambda.sh  
-This should create the transcriptions.zip package (in the main directory)  
+Go to the build directory and run build_lambda.sh  
+This should create the summarizations.zip package/summarization (from the main directory)  
 
 # Appendix
 ## The watcher service 
