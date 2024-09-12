@@ -1,7 +1,7 @@
 import unittest
 import sys
 sys.path.append('.')
-from summarization import summarize
+from summarize import summarize
 
 class TestSummarization(unittest.TestCase):
 
@@ -9,5 +9,4 @@ class TestSummarization(unittest.TestCase):
         summarize("tests/testfiles/story.txt", None)
 
 if __name__ == '__main__':
-    print(sys.path)
     unittest.main()

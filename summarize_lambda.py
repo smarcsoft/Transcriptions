@@ -1,4 +1,4 @@
-from summarization import summarize
+from summarize import summarize
 import logging
 import json
 import boto3
@@ -14,8 +14,10 @@ logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
     try:
+        logger.info(f"Handler started with event: {event}")
         event_list:list = event['Records']
         logger.info(f"Starting summarization lambda function with {len(event_list)} records")
+        logger.debug(f"Event: {event}")
         for record in event_list:
             key = record['s3']['object']['key']
             bucket = record['s3']['bucket']['name']

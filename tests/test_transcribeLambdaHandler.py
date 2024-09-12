@@ -3,7 +3,6 @@ import boto3
 from mypy_boto3_s3.client import S3Client
 import sys
 sys.path.append('.')
-print (sys.path)
 from transcribe_lambda import lambda_handler
 
 
@@ -20,10 +19,8 @@ class TestLambdaHandler(unittest.TestCase):
         event={'Records':[{'s3':{'object':{'key':filename},'bucket':{'name':'smarctranscriptions'}}}]}
         context = None
         result = lambda_handler(event, context)
-
-        # Assert
+        print(result)
         self.assertEqual(result['statusCode'], 200)
-        self.assertTrue(f"has been transcribed" in result['body'])
 
     def tearDown(self) -> None:
         s3 = boto3.client('s3')

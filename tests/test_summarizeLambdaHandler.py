@@ -3,7 +3,6 @@ import boto3
 from mypy_boto3_s3.client import S3Client
 import sys
 sys.path.append('.')
-print (sys.path)
 from summarize_lambda import lambda_handler
 
 

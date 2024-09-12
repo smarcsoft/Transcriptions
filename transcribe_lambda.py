@@ -26,6 +26,7 @@ speaker_labels=True
 def lambda_handler(event, context):
     try:
         event_list:list = event['Records']
+        transcriptions = []
         logger.info(f"Starting transcription lambda function with {len(event_list)} records")
         for record in event_list:
             key = record['s3']['object']['key']
@@ -47,12 +48,14 @@ def lambda_handler(event, context):
             logging.info(f"Transcription saved to file: {TMPFILE}")
             logging.info(f"Pushing transcription to S3 bucket with key {OUTPUT_FILE_NAME}")
             s3:S3Client = boto3.client('s3')
+#            region = s3.get_bucket_location(Bucket=bucket)
             logging.info(f"Uploading {TMPFILE} to bucket {bucket}")
             s3.upload_file(TMPFILE, bucket, f'{OUTPUT_FILE_NAME}')
             logging.info(f"{TMPFILE} has been uploaded to bucket smarctranscription with key {OUTPUT_FILE_NAME}")
+            transcriptions.append(f"https://{bucket}.s3.amazonaws.com/{OUTPUT_FILE_NAME}")
         return {
             'statusCode': 200,
-            'body': json.dumps(f"File(s) {event['Records']} has been transcribed")
+            'transcriptions': transcriptions
         }
     except Exception as e:
         logger.error(f"An error occurred during transcription: {str(e)}")

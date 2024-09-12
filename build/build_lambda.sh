@@ -23,6 +23,7 @@ install_dependencies() {
 
 
 setup() {
+    sync
     script_path="$(realpath "$0")"
     # Extract the directory path
     script_dir="$(dirname "$script_path")"
@@ -46,7 +47,11 @@ create_package() {
     zip -r $parent_dir/$pkg_name.zip . > /dev/null 2>&1
     cd $parent_dir || { echo "Failed to change to parent directory" >&2; exit 1; }
     echo "Adding lambda function "$pkg_name"_lambda.py to package $parent_dir/$pkg_name.zip..."
-    zip $parent_dir/$pkg_name.zip "$pkg_name"_lambda.py > /dev/null 2>&1 || { echo "Failed to add lambda function "$pkg_name"_lambda.py to package $parent_dir/$pkg_name.zip" >&2; exit 1; }
+    zip $parent_dir/$pkg_name.zip "$pkg_name"_lambda.py > /dev/null 2>&1 || { echo "Failed to add lambda function "$pkg_name"_lambda.py to package "$parent_dir"/"$pkg_name".zip" >&2; exit 1; }
+    echo "Adding lambda function "$pkg_name".py..."
+    zip $parent_dir/$pkg_name.zip "$pkg_name".py > /dev/null 2>&1 || { echo "Failed to add "$pkg_name".py to package "$parent_dir"/"$pkg_name".zip" >&2; exit 1; }
+    echo "Adding config.py..."
+    zip $parent_dir/$pkg_name.zip config.py > /dev/null 2>&1 || { echo "Failed to add config.py to package "$parent_dir"/"$pkg_name".zip" >&2; exit 1; }
     echo "Removing pycache files from package $parent_dir/$pkg_name.zip..."
     zip -d $parent_dir/$pkg_name.zip "*/__pycache__/*" > /dev/null 2>&1 || { echo "Failed to remove pycache files from package $parent_dir/$pkg_name.zip" >&2; exit 1; }
     # move the zip file to the package directory
@@ -60,6 +65,7 @@ if [[ $1 == "--package" ]]; then
     package_name=$2
 else
     echo "Invalid argument. Usage: $0 --package <package_name>|all"
+    echo "package_name can either be transcribe or summarize"
     exit 1
 fi
 
@@ -76,6 +82,7 @@ if [[ $package_name != "all" ]]; then
     install_dependencies $parent_dir $package_name
     # Call the function to create the package
     create_package $package_name
+    cleanup $package_name
 else
     # Call the function to install dependencies
     install_dependencies $parent_dir "transcribe"
