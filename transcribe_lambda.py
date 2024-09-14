@@ -1,7 +1,4 @@
-# `pip3 install assemblyai` (macOS)
-# `pip install assemblyai` (Windows)
-
-from transcription import transcribe
+from transcribe import transcribe
 import logging
 import json
 import boto3

@@ -56,7 +56,7 @@ create_package() {
     zip -d $parent_dir/$pkg_name.zip "*/__pycache__/*" > /dev/null 2>&1 || { echo "Failed to remove pycache files from package $parent_dir/$pkg_name.zip" >&2; exit 1; }
     # move the zip file to the package directory
     mv $parent_dir/$pkg_name.zip $parent_dir/package
-    echo "Package available at package/$pkg_name/$pkg_name.zip !"
+    echo "Package available at package/$pkg_name.zip !"
 }
 
 
@@ -82,6 +82,12 @@ if [[ $package_name != "all" ]]; then
     install_dependencies $parent_dir $package_name
     # Call the function to create the package
     create_package $package_name
+    if [[ $package_name == "transcribe" ]]; then
+        $script_dir/upload_lambda.sh Transcription $parent_dir/package/transcribe.zip eu-west-1
+    fi
+    if [[ $package_name == "summarize" ]]; then
+        $script_dir/upload_lambda.sh Summarization $parent_dir/package/summarize.zip eu-west-1
+    fi
     cleanup $package_name
 else
     # Call the function to install dependencies
@@ -91,5 +97,7 @@ else
     cleanup "transcribe"
     install_dependencies $parent_dir "summarize"
     create_package "summarize"
+    $script_dir/upload_lambda.sh Transcription $parent_dir/package/transcribe.zip eu-west-1
+    $script_dir/upload_lambda.sh Summarization $parent_dir/package/summarize.zip eu-west-1
     cleanup "summarize"
 fi
