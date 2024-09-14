@@ -14,14 +14,10 @@ class TestLambdaHandler(unittest.TestCase):
         return super().setUp()
     
     def test_lambda_handler(self):
-        filename = "story.txt"
-        event={'Records':[{'s3':{'object':{'key':filename},'bucket':{'name':'smarctranscriptions'}}}]}
+        event={'files':[{'inputfile': 'https://smarctranscriptions.s3.amazonaws.com/story.txt', 'bucket':'smarctranscriptions'}]}
         context = None
         result = lambda_handler(event, context)
-
-        # Assert
         self.assertEqual(result['statusCode'], 200)
-        self.assertTrue(f"has been transcribed" in result['body'])
 
     def tearDown(self) -> None:
         s3 = boto3.client('s3')

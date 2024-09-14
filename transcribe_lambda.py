@@ -52,10 +52,11 @@ def lambda_handler(event, context):
             logging.info(f"Uploading {TMPFILE} to bucket {bucket}")
             s3.upload_file(TMPFILE, bucket, f'{OUTPUT_FILE_NAME}')
             logging.info(f"{TMPFILE} has been uploaded to bucket smarctranscription with key {OUTPUT_FILE_NAME}")
-            transcriptions.append(f"https://{bucket}.s3.amazonaws.com/{OUTPUT_FILE_NAME}")
+            file:dict = {'inputfile': f"https://{bucket}.s3.amazonaws.com/{OUTPUT_FILE_NAME}", "bucket": bucket}
+            transcriptions.append(file)
         return {
             'statusCode': 200,
-            'transcriptions': transcriptions
+            'files': transcriptions
         }
     except Exception as e:
         logger.error(f"An error occurred during transcription: {str(e)}")

@@ -20,7 +20,7 @@ def summarize_text(text:str)->str:
     return toReturn
 
 
-def summarize(inputfile:str, outputfile:str|None):
+def summarize_file(inputfile:str, outputfile:str|None):
     with open(inputfile, 'r') as file:
         text_to_summarize = file.read() 
     summary = summarize_text(text_to_summarize)
@@ -51,4 +51,4 @@ if __name__ == "__main__":
         OUTPUT_FILE_DIR = FILE.rsplit("\\", 1)[0]
     OUTPUT_FILE_URL = OUTPUT_FILE_DIR + "\\" + FILE.split("\\")[-1].split(".")[0] + "_summary.txt"
 
-    summarize(FILE, OUTPUT_FILE_URL)
+    summarize_file(FILE, OUTPUT_FILE_URL)
