@@ -76,12 +76,12 @@ def transcribe_file(file: str)-> str:
     spinthread:Thread = Thread(target=spin_progress_bar, args=(progress,))
     spinthread.start()
     # Uncomment the following line to transcribe the file without AWS lamdba function
-    # transcribe(file, outputfile) 
-    outputpath = os.path.dirname(file)
-    keytxt = os.path.basename(outputfile)
-    keyaudio = os.path.basename(file)
-    copy_file_from_s3(wait_for_transcription(copy_file_to_s3(file), keytxt), outputpath)
-    clean_s3(keyaudio, keytxt)
+    transcribe(file, outputfile) 
+    # outputpath = os.path.dirname(file)
+    # keytxt = os.path.basename(outputfile)
+    # keyaudio = os.path.basename(file)
+    # copy_file_from_s3(wait_for_transcription(copy_file_to_s3(file), keytxt), outputpath)
+    # clean_s3(keyaudio, keytxt)
     stop_spinning = True
     spinthread.join()
     progress['value'] = 100
@@ -132,6 +132,10 @@ if __name__ == "__main__":
     # Create a label
     label = tk.Label(window, text="Transcription in progress...")
     label.pack()
+
+    # Create a button
+    summarize_button = tk.Button(window, text="Summarize...", command=lambda: logger.info("Summarize button clicked"))
+    summarize_button.pack(pady=10)
 
     # Parse command line arguments
     if file_to_transcribe:

@@ -22,7 +22,7 @@ class TestLambdaHandler(unittest.TestCase):
     def tearDown(self) -> None:
         s3 = boto3.client('s3')
         s3.delete_object(Bucket='smarctranscriptions', Key='story.txt')
-        # TODO s3.delete_object(Bucket='smarctranscriptions', Key='story_summary.txt')
+        s3.delete_object(Bucket='smarctranscriptions', Key='story_summary.txt')
         return super().tearDown()
  
 

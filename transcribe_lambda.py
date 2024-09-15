@@ -13,12 +13,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 api_key = get_parameter("/transcription/ASSEMBLYAI_APIKEY")
-# TODO Implement language detection
-language_code="en"
+language_code=None
 speaker_labels=True
-
-
-
 
 def lambda_handler(event, context):
     try:
