@@ -7,7 +7,7 @@ import argparse
 
 DEFAULT_API_KEY = get_parameter("/transcription/ASSEMBLYAI_APIKEY")
 
-def transcribe(inputfile:str, outputfile:str|None=None, api_key:str=DEFAULT_API_KEY, language_code:str|None=None, speaker_labels:bool=True):
+def transcribe_file(inputfile:str, outputfile:str|None=None, api_key:str=DEFAULT_API_KEY, language_code:str|None=None, speaker_labels:bool=True):
     """
     Transcribes an audio file using the specified API key and configuration.
     Args:
