@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python Debugger: Service in test mode",
             "type": "debugpy",
             "request": "launch",
@@ -17,7 +24,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
-            "args": ["--file","testfiles\\sample.m4a", "--stdout"],
+            "args": ["--file","tests\\testfiles\\sample.m4a", "--stdout"],
             "console": "integratedTerminal"
         }
     ]

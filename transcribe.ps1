@@ -1,0 +1,1 @@
+Start-Process "transcribe.bat" -WindowStyle Hidden -Arg $($args[0])

@@ -1,15 +1,19 @@
-import assemblyai as aai
 import logging
 import openai
-import os
 import argparse
+from config import get_parameter
 
-OPENAI_KEY=os.getenv("OPENAI_KEY")
-if OPENAI_KEY == None:
-    logging.error("OPENAI_KEY environment variable not set.")
-    exit(1)
+OPENAI_KEY=get_parameter("/transcription/OPENAI_APIKEY")
 
 def summarize_text(text:str)->str:
+    """
+    Summarizes the given text using OpenAI's GPT-3.5-turbo model.
+    Args:
+        text (str): The text to be summarized.
+    Returns:
+        str: The summarized text. Returns an empty string if the response is None.
+    """
+
     openai.api_key = OPENAI_KEY
     response = openai.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -24,7 +28,16 @@ def summarize_text(text:str)->str:
     return toReturn
 
 
-def summarize(inputfile:str, outputfile:str, api_key:str=OPENAI_KEY, language_code:str|None=None, speaker_labels:bool=True):
+def summarize_file(inputfile:str, outputfile:str|None):
+    """
+    Summarizes the content of a given input file and writes the summary to an output file or prints it.
+    Args:
+        inputfile (str): The path to the input file containing the text to be summarized.
+        outputfile (str | None): The path to the output file where the summary will be written. 
+                                    If None, the summary will be printed to the console.
+    Returns:
+        None
+    """
     with open(inputfile, 'r') as file:
         text_to_summarize = file.read() 
     summary = summarize_text(text_to_summarize)
@@ -50,10 +63,9 @@ if __name__ == "__main__":
 
     # Handle parameters
     FILE = args.file
-    aai.settings.api_key = args.api_key
     OUTPUT_FILE_DIR = args.output_file_dir
     if not OUTPUT_FILE_DIR:
         OUTPUT_FILE_DIR = FILE.rsplit("\\", 1)[0]
     OUTPUT_FILE_URL = OUTPUT_FILE_DIR + "\\" + FILE.split("\\")[-1].split(".")[0] + "_summary.txt"
 
-    summarize(FILE, OUTPUT_FILE_URL, args.api_key)
+    summarize_file(FILE, OUTPUT_FILE_URL)

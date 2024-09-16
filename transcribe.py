@@ -1,20 +1,40 @@
 import assemblyai as aai
 import logging
+from config import get_parameter
 
 # Handle parametersimport argparse
 import argparse
 
-DEFAULT_API_KEY = "b4dd2fbbb4164707a20534980fa0bfb4"
+DEFAULT_API_KEY = get_parameter("/transcription/ASSEMBLYAI_APIKEY")
 
-def transcribe(inputfile:str, outputfile:str|None=None, api_key:str=DEFAULT_API_KEY, language_code:str|None=None, speaker_labels:bool=True):
+def transcribe_file(inputfile:str, outputfile:str|None=None, api_key:str=DEFAULT_API_KEY, language_code:str|None=None, speaker_labels:bool=True):
+    """
+    Transcribes an audio file using the specified API key and configuration.
+    Args:
+        inputfile (str): Path to the input audio file to be transcribed.
+        outputfile (str | None, optional): Path to the output file where the transcription will be saved. 
+                                            If None, the transcription will be printed to the console. Defaults to None.
+        api_key (str, optional): API key for the transcription service. Defaults to DEFAULT_API_KEY.
+        language_code (str | None, optional): Language code for the transcription. If None, language detection will be enabled. Defaults to None.
+        speaker_labels (bool, optional): Whether to include speaker labels in the transcription. Defaults to True.
+    Raises:
+        Exception: If there is an error during transcription.
+    Returns:
+        None
+    """
+
     aai.settings.api_key = api_key
     transcriber = aai.Transcriber()
-    config = aai.TranscriptionConfig(language_code=language_code, speaker_labels=speaker_labels)
+
+    config = aai.TranscriptionConfig(speaker_labels=speaker_labels)
+    if(language_code is not None):
+        config.language_code = language_code
+    else:
+        config.language_detection = True
 
     logging.info(f"Transcribing file: {inputfile}")
     logging.info(f"Output file: {outputfile}")
     logging.info(f"API Key: {api_key}")
-    logging.info(f"Language Code: {language_code}")
     logging.info(f"Speaker Labels: {speaker_labels}")
 
     transcript = transcriber.transcribe(inputfile, config=config)
